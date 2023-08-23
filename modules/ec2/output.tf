@@ -3,7 +3,11 @@ output "ami" {
 }
 
 output "public_ip" {
-  value = aws_instance.myec2.associate_public_ip_address
+  value = aws_instance.myec2.public_ip
+}
+
+output "private_ip" {
+  value = aws_instance.myec2.private_ip
 }
 
 output "host_id" {
@@ -16,4 +20,8 @@ output "ec2_id" {
 
 output "volume_tags" {
   value = aws_instance.myec2.volume_tags
+}
+
+output "public_dns" {
+  value = aws_instance.myec2.public_dns
 }

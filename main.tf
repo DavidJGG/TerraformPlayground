@@ -27,7 +27,7 @@ module "keyPair" {
   file_name = "davidKeyTerraform.pub"
 }
 
-/* module "ec2_1" {
+module "ec2_1" {
   source = "./modules/ec2"
 
   ami_id          = "ami-053b0d53c279acc90"
@@ -41,8 +41,41 @@ module "keyPair" {
   instance_type = "t2.micro"
 
   depends_on = [aws_security_group.sg_ec2_allow_ssh]
-} */
+} 
 
+module "ec2_2" {
+  source = "./modules/ec2"
+
+  ami_id          = "ami-053b0d53c279acc90"
+  subnet_id       = module.vpc.public_subnets[0]
+  volume_size     = 10
+  name            = "ec2-B"
+  security_groups = [aws_security_group.sg_ec2_allow_ssh.id]
+
+  key_name = module.keyPair.name
+
+  instance_type = "t2.micro"
+
+  depends_on = [aws_security_group.sg_ec2_allow_ssh]
+} 
+
+module "ec2_3" {
+  source = "./modules/ec2"
+
+  ami_id          = "ami-053b0d53c279acc90"
+  subnet_id       = module.vpc.public_subnets[0]
+  volume_size     = 10
+  name            = "ec2-C"
+  security_groups = [aws_security_group.sg_ec2_allow_ssh.id]
+
+  key_name = module.keyPair.name
+
+  instance_type = "t2.micro"
+
+  depends_on = [aws_security_group.sg_ec2_allow_ssh]
+} 
+
+/*
 module "launctemplate" {
   source = "./modules/launchtemplate"
 
@@ -69,7 +102,7 @@ module "asg" {
   min         = 0
   template_id = module.launctemplate.launch_template_id
 }
-
+*/
 
 
 resource "aws_security_group" "sg_ec2_allow_ssh" {
