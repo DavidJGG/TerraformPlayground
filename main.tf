@@ -34,13 +34,15 @@ module "ec2_1" {
   subnet_id       = module.vpc.public_subnets[0]
   volume_size     = 10
   name            = "ec2-A"
-  security_groups = [aws_security_group.sg_ec2_allow_ssh.id]
+  security_groups = [aws_security_group.sg_ec2_allow_ssh.id, aws_security_group.sg_ec2_allow_http.id]
 
+  user_data = filebase64("${path.module}/scripts/bootstrap.sh")
+  
   key_name = module.keyPair.name
 
   instance_type = "t2.micro"
 
-  depends_on = [aws_security_group.sg_ec2_allow_ssh]
+  depends_on = [aws_security_group.sg_ec2_allow_ssh, aws_security_group.sg_ec2_allow_http]
 } 
 
 module "ec2_2" {
@@ -50,13 +52,15 @@ module "ec2_2" {
   subnet_id       = module.vpc.public_subnets[0]
   volume_size     = 10
   name            = "ec2-B"
-  security_groups = [aws_security_group.sg_ec2_allow_ssh.id]
+  security_groups = [aws_security_group.sg_ec2_allow_ssh.id, aws_security_group.sg_ec2_allow_http.id]
+
+  user_data = filebase64("${path.module}/scripts/bootstrap.sh")
 
   key_name = module.keyPair.name
 
   instance_type = "t2.micro"
 
-  depends_on = [aws_security_group.sg_ec2_allow_ssh]
+  depends_on = [aws_security_group.sg_ec2_allow_ssh, aws_security_group.sg_ec2_allow_http]
 } 
 
 module "ec2_3" {
@@ -66,13 +70,15 @@ module "ec2_3" {
   subnet_id       = module.vpc.public_subnets[0]
   volume_size     = 10
   name            = "ec2-C"
-  security_groups = [aws_security_group.sg_ec2_allow_ssh.id]
+  security_groups = [aws_security_group.sg_ec2_allow_ssh.id, aws_security_group.sg_ec2_allow_http.id]
+
+  user_data = filebase64("${path.module}/scripts/bootstrap.sh")
 
   key_name = module.keyPair.name
 
   instance_type = "t2.micro"
 
-  depends_on = [aws_security_group.sg_ec2_allow_ssh]
+  depends_on = [aws_security_group.sg_ec2_allow_ssh, aws_security_group.sg_ec2_allow_http]
 } 
 
 /*
@@ -128,6 +134,40 @@ resource "aws_security_group" "sg_ec2_allow_ssh" {
   }
 
   tags = merge(local.tags, { Name = "sg_allow_ssh_ec2" })
+}
+
+resource "aws_security_group" "sg_ec2_allow_http" {
+  name        = "Allow http trafic"
+  description = "Allow http trafic"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description      = "http"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "http"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = merge(local.tags, { Name = "sg_allow_http_ec2" })
 }
 
 locals {

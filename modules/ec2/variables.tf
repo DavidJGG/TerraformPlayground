@@ -33,3 +33,8 @@ variable "instance_type"{
   type = string
   nullable = false
 }
+
+variable "user_data" {
+  default = ""
+  type = string
+}

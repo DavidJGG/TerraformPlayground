@@ -25,3 +25,7 @@ output "volume_tags" {
 output "public_dns" {
   value = aws_instance.myec2.public_dns
 }
+
+output "user_data_output" {
+  value = aws_instance.myec2.user_data
+}

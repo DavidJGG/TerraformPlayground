@@ -17,6 +17,8 @@ resource "aws_instance" "myec2" {
 
   security_groups = var.security_groups
 
+  user_data_base64 = var.user_data
+
   tags = {
     Terraform = true
     Name = var.name
